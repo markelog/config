@@ -11,6 +11,7 @@ import (
 var _ = Describe("Config", func() {
 	var (
 		path string
+    conf *config.Config
 	)
 
   BeforeEach(func() {
@@ -18,19 +19,34 @@ var _ = Describe("Config", func() {
   })
 
 	Describe("Define config", func() {
-    It("should save config with correct name", func() {
+    BeforeEach(func() {
       path += "/simple.json"
 
-      conf := config.New(&config.Options{File: path})
-      conf.Save()
+      conf = config.New(&config.Options{File: path})
+    })
 
+    AfterEach(func() {
+      os.Remove(path)
+    })
+
+    It("should save config with correct name", func() {
+      conf.Save()
       if _, err := os.Stat(path); os.IsNotExist(err) {
         Ω(false).To(Equal(true))
       } else {
         Ω(true).To(Equal(true))
       }
+    })
 
-      os.Remove(path)
+    It("should save config with correct name", func() {
+      conf.Save()
+      result, err := conf.Read()
+
+      if err != nil {
+        Ω(false).To(Equal(err))
+      } else {
+        Ω("").To(Equal(result))
+      }
     })
 	})
 })

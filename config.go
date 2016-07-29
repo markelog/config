@@ -17,7 +17,7 @@ type Config struct {
 func New(options *Options) *Config {
   config := &Config{}
   config.options = options
-  config.content = "test"
+  config.content = ""
 
   return config
 }
@@ -28,14 +28,13 @@ func (config *Config) Save() error {
   return ioutil.WriteFile(config.options.File, content, 0666)
 }
 
+func (config *Config) Read() (string, error) {
+  bytes, err := ioutil.ReadFile(config.options.File)
 
-// func (config *Config) Read() (string, error) {
-//   bytes, err := ioutil.ReadFile(config.options.file)
+  if err != nil {
+    return "", err
+  }
 
-//   if err != nil {
-//     return "", err
-//   }
-
-//   return string(bytes), nil
-// }
+  return string(bytes), nil
+}
 
