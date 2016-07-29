@@ -3,6 +3,8 @@ package config
 
 import (
   "io/ioutil"
+
+  "github.com/Jeffail/gabs"
 )
 
 type Options struct {
@@ -11,19 +13,25 @@ type Options struct {
 
 type Config struct {
   options *Options
-  content string
+  content *gabs.Container
 }
 
 func New(options *Options) *Config {
   config := &Config{}
   config.options = options
-  config.content = ""
+
+  content, _ := gabs.ParseJSON([]byte(`{}`))
+  config.content = content
 
   return config
 }
 
+func (config *Config) Set(key string, value interface{}) (*gabs.Container, error) {
+  return config.content.SetP(value, key)
+}
+
 func (config *Config) Save() error {
-  content := []byte(config.content)
+  content := []byte(config.content.String())
 
   return ioutil.WriteFile(config.options.File, content, 0666)
 }
@@ -35,6 +43,12 @@ func (config *Config) Read() (string, error) {
     return "", err
   }
 
-  return string(bytes), nil
+  parsed, err := gabs.ParseJSON(bytes)
+
+  if err != nil {
+    return "", err
+  }
+
+  return parsed.String(), nil
 }
 

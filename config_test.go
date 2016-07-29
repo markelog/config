@@ -38,14 +38,62 @@ var _ = Describe("Config", func() {
       }
     })
 
-    It("should save config with correct name", func() {
+    It("should read saved file", func() {
       conf.Save()
       result, err := conf.Read()
 
       if err != nil {
         Ω(false).To(Equal(err))
       } else {
-        Ω("").To(Equal(result))
+        Ω(result).To(Equal("{}"))
+      }
+    })
+
+    It("should set one level key with string value", func() {
+      conf.Set("test", "1")
+      conf.Save()
+      result, err := conf.Read()
+
+      if err != nil {
+        Ω(false).To(Equal(err))
+      } else {
+        Ω(`{"test":"1"}`).To(Equal(result))
+      }
+    })
+
+    It("should set one level key with int value", func() {
+      conf.Set("test", 1)
+      conf.Save()
+      result, err := conf.Read()
+
+      if err != nil {
+        Ω(false).To(Equal(err))
+      } else {
+        Ω(`{"test":1}`).To(Equal(result))
+      }
+    })
+
+    It("should set second level key with string value", func() {
+      conf.Set("test.path", "tester")
+      conf.Save()
+      result, err := conf.Read()
+
+      if err != nil {
+        Ω(false).To(Equal(err))
+      } else {
+        Ω(`{"test":{"path":"tester"}}`).To(Equal(result))
+      }
+    })
+
+    It("should set second level key with int value", func() {
+      conf.Set("test.path", 1)
+      conf.Save()
+      result, err := conf.Read()
+
+      if err != nil {
+        Ω(false).To(Equal(err))
+      } else {
+        Ω(`{"test":{"path":1}}`).To(Equal(result))
       }
     })
 	})
