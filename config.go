@@ -34,6 +34,10 @@ func (config *Config) Get(key string) interface{} {
   return config.content.Path(key).Data()
 }
 
+func (config *Config) Remove(key string) error {
+  return config.content.DeleteP(key)
+}
+
 func (config *Config) Save() error {
   content := []byte(config.content.String())
 

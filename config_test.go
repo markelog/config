@@ -2,8 +2,6 @@ package config_test
 
 import (
 	"os"
-  // "fmt"
-  // "reflect"
 
 	"github.com/markelog/config"
 	. "github.com/onsi/ginkgo"
@@ -131,6 +129,23 @@ var _ = Describe("Config", func() {
         value := conf.Get("test.path")
 
         Ω(value).To(Equal(true))
+      })
+    })
+
+    Describe("`Remove` method", func() {
+      It("should remove value", func() {
+        conf.Set("test.path", 1)
+        conf.Remove("test.path")
+
+        value := conf.Get("test.path")
+
+        Ω(value).To(BeNil())
+      })
+
+      It("should get an error for non-existent value", func() {
+        value := conf.Remove("test.path")
+
+        Ω(value).Should(MatchError("not an object"))
       })
     })
 	})
