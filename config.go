@@ -46,13 +46,7 @@ func (config *Config) Save() error {
 }
 
 func (config *Config) Read() (*gabs.Container, error) {
-  bytes, err := ioutil.ReadFile(config.path)
-
-  if err != nil {
-    return nil, err
-  }
-
-  parsed, err := gabs.ParseJSON(bytes)
+  parsed, err := gabs.ParseJSONFile(config.path)
   config.content = parsed
 
   if err != nil {
@@ -61,4 +55,3 @@ func (config *Config) Read() (*gabs.Container, error) {
 
   return parsed, nil
 }
-
