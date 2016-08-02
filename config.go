@@ -8,17 +8,18 @@ import (
 )
 
 type Options struct {
-  File string
+  Path string
 }
 
 type Config struct {
-  options *Options
+  path string
   content *gabs.Container
 }
 
 func New(options *Options) *Config {
   config := &Config{}
-  config.options = options
+
+  config.path = options.Path
 
   content, _ := gabs.ParseJSON([]byte(`{}`))
   config.content = content
@@ -41,22 +42,23 @@ func (config *Config) Remove(key string) error {
 func (config *Config) Save() error {
   content := []byte(config.content.String())
 
-  return ioutil.WriteFile(config.options.File, content, 0666)
+  return ioutil.WriteFile(config.path, content, 0666)
 }
 
-func (config *Config) Read() (string, error) {
-  bytes, err := ioutil.ReadFile(config.options.File)
+func (config *Config) Read() (*gabs.Container, error) {
+  bytes, err := ioutil.ReadFile(config.path)
 
   if err != nil {
-    return "", err
+    return nil, err
   }
 
   parsed, err := gabs.ParseJSON(bytes)
+  config.content = parsed
 
   if err != nil {
-    return "", err
+    return nil, err
   }
 
-  return parsed.String(), nil
+  return parsed, nil
 }
 

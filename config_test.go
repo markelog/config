@@ -22,7 +22,7 @@ var _ = Describe("Config", func() {
     BeforeEach(func() {
       path += "/simple.json"
 
-      conf = config.New(&config.Options{File: path})
+      conf = config.New(&config.Options{Path: path})
     })
 
     AfterEach(func() {
@@ -31,8 +31,8 @@ var _ = Describe("Config", func() {
 
     Describe("`Save` method", func() {
       It("should save config with correct name", func() {
-        conf.Save()
-        if _, err := os.Stat(path); os.IsNotExist(err) {
+        err := conf.Save()
+        if _, err = os.Stat(path); os.IsNotExist(err) {
           Ω(false).To(Equal(true))
         } else {
           Ω(true).To(Equal(true))
@@ -48,7 +48,20 @@ var _ = Describe("Config", func() {
         if err != nil {
           Ω(false).To(Equal(err))
         } else {
-          Ω(result).To(Equal("{}"))
+          Ω(result.String()).To(Equal("{}"))
+        }
+      })
+
+      It("should throw down unsaved data", func() {
+        conf.Save()
+        conf.Set("test.path", 1)
+        conf.Read()
+        result := conf.Get("test.path")
+
+        if result == nil {
+          Ω(true).To(Equal(true))
+        } else {
+          Ω(false).To(Equal(true))
         }
       })
     })
@@ -62,7 +75,7 @@ var _ = Describe("Config", func() {
         if err != nil {
           Ω(false).To(Equal(err))
         } else {
-          Ω(`{"test":"1"}`).To(Equal(result))
+          Ω(result.String()).To(Equal(`{"test":"1"}`))
         }
       })
 
@@ -74,7 +87,7 @@ var _ = Describe("Config", func() {
         if err != nil {
           Ω(false).To(Equal(err))
         } else {
-          Ω(`{"test":1}`).To(Equal(result))
+          Ω(result.String()).To(Equal(`{"test":1}`))
         }
       })
 
@@ -86,7 +99,7 @@ var _ = Describe("Config", func() {
         if err != nil {
           Ω(false).To(Equal(err))
         } else {
-          Ω(`{"test":{"path":"tester"}}`).To(Equal(result))
+          Ω(result.String()).To(Equal(`{"test":{"path":"tester"}}`))
         }
       })
 
@@ -98,7 +111,7 @@ var _ = Describe("Config", func() {
         if err != nil {
           Ω(false).To(Equal(err))
         } else {
-          Ω(`{"test":{"path":1}}`).To(Equal(result))
+          Ω(result.String()).To(Equal(`{"test":{"path":1}}`))
         }
       })
 
@@ -110,7 +123,7 @@ var _ = Describe("Config", func() {
         if err != nil {
           Ω(false).To(Equal(err))
         } else {
-          Ω(`{"test":[2,3]}`).To(Equal(result))
+          Ω(result.String()).To(Equal(`{"test":[2,3]}`))
         }
       })
     })
