@@ -101,6 +101,18 @@ var _ = Describe("Config", func() {
           Ω(`{"test":{"path":1}}`).To(Equal(result))
         }
       })
+
+      It("should set one level key with array value", func() {
+        conf.Set("test", [2]int{2, 3})
+        conf.Save()
+        result, err := conf.Read()
+
+        if err != nil {
+          Ω(false).To(Equal(err))
+        } else {
+          Ω(`{"test":[2,3]}`).To(Equal(result))
+        }
+      })
     })
 
     Describe("`Get` method", func() {
@@ -129,6 +141,14 @@ var _ = Describe("Config", func() {
         value := conf.Get("test.path")
 
         Ω(value).To(Equal(true))
+      })
+
+      It("should get array", func() {
+        conf.Set("test.path", [2]int{2, 3})
+        value := conf.Get("test.path").([2]int)
+
+        Ω(value[0]).To(Equal(2))
+        Ω(value[1]).To(Equal(3))
       })
 
       It("should get an error for non-existent value", func() {
