@@ -130,6 +130,12 @@ var _ = Describe("Config", func() {
 
         Ω(value).To(Equal(true))
       })
+
+      It("should get an error for non-existent value", func() {
+        value := conf.Get("test.path")
+
+        Ω(value).To(BeNil())
+      })
     })
 
     Describe("`Remove` method", func() {
