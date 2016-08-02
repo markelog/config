@@ -31,99 +31,107 @@ var _ = Describe("Config", func() {
       os.Remove(path)
     })
 
-    It("should save config with correct name", func() {
-      conf.Save()
-      if _, err := os.Stat(path); os.IsNotExist(err) {
-        Ω(false).To(Equal(true))
-      } else {
-        Ω(true).To(Equal(true))
-      }
+    Describe("`Save` method", func() {
+      It("should save config with correct name", func() {
+        conf.Save()
+        if _, err := os.Stat(path); os.IsNotExist(err) {
+          Ω(false).To(Equal(true))
+        } else {
+          Ω(true).To(Equal(true))
+        }
+      })
     })
 
-    It("should read saved file", func() {
-      conf.Save()
-      result, err := conf.Read()
+    Describe("`Read` method", func() {
+      It("should read saved file", func() {
+        conf.Save()
+        result, err := conf.Read()
 
-      if err != nil {
-        Ω(false).To(Equal(err))
-      } else {
-        Ω(result).To(Equal("{}"))
-      }
+        if err != nil {
+          Ω(false).To(Equal(err))
+        } else {
+          Ω(result).To(Equal("{}"))
+        }
+      })
     })
 
-    It("should set one level key with string value", func() {
-      conf.Set("test", "1")
-      conf.Save()
-      result, err := conf.Read()
+    Describe("`Set` method", func() {
+      It("should set one level key with string value", func() {
+        conf.Set("test", "1")
+        conf.Save()
+        result, err := conf.Read()
 
-      if err != nil {
-        Ω(false).To(Equal(err))
-      } else {
-        Ω(`{"test":"1"}`).To(Equal(result))
-      }
+        if err != nil {
+          Ω(false).To(Equal(err))
+        } else {
+          Ω(`{"test":"1"}`).To(Equal(result))
+        }
+      })
+
+      It("should set one level key with int value", func() {
+        conf.Set("test", 1)
+        conf.Save()
+        result, err := conf.Read()
+
+        if err != nil {
+          Ω(false).To(Equal(err))
+        } else {
+          Ω(`{"test":1}`).To(Equal(result))
+        }
+      })
+
+      It("should set second level key with string value", func() {
+        conf.Set("test.path", "tester")
+        conf.Save()
+        result, err := conf.Read()
+
+        if err != nil {
+          Ω(false).To(Equal(err))
+        } else {
+          Ω(`{"test":{"path":"tester"}}`).To(Equal(result))
+        }
+      })
+
+      It("should set second level key with int value", func() {
+        conf.Set("test.path", 1)
+        conf.Save()
+        result, err := conf.Read()
+
+        if err != nil {
+          Ω(false).To(Equal(err))
+        } else {
+          Ω(`{"test":{"path":1}}`).To(Equal(result))
+        }
+      })
     })
 
-    It("should set one level key with int value", func() {
-      conf.Set("test", 1)
-      conf.Save()
-      result, err := conf.Read()
+    Describe("`Get` method", func() {
+      It("should get int value", func() {
+        conf.Set("test.path", 1)
+        conf.Save()
 
-      if err != nil {
-        Ω(false).To(Equal(err))
-      } else {
-        Ω(`{"test":1}`).To(Equal(result))
-      }
-    })
+        value := conf.Get("test.path")
 
-    It("should set second level key with string value", func() {
-      conf.Set("test.path", "tester")
-      conf.Save()
-      result, err := conf.Read()
+        Ω(value).To(Equal(1))
+      })
 
-      if err != nil {
-        Ω(false).To(Equal(err))
-      } else {
-        Ω(`{"test":{"path":"tester"}}`).To(Equal(result))
-      }
-    })
+      It("should get string value", func() {
+        conf.Set("test.path", "test")
+        conf.Save()
 
-    It("should set second level key with int value", func() {
-      conf.Set("test.path", 1)
-      conf.Save()
-      result, err := conf.Read()
+        value := conf.Get("test.path")
 
-      if err != nil {
-        Ω(false).To(Equal(err))
-      } else {
-        Ω(`{"test":{"path":1}}`).To(Equal(result))
-      }
-    })
+        Ω(value).To(Equal("test"))
+      })
 
-    It("should get int value", func() {
-      conf.Set("test.path", 1)
-      conf.Save()
+      It("should get boolean value", func() {
+        conf.Set("test.path", true)
+        conf.Save()
 
-      value := conf.Get("test.path")
+        value := conf.Get("test.path")
 
-      Ω(value).To(Equal(1))
-    })
-
-    It("should get string value", func() {
-      conf.Set("test.path", "test")
-      conf.Save()
-
-      value := conf.Get("test.path")
-
-      Ω(value).To(Equal("test"))
-    })
-
-    It("should get boolean value", func() {
-      conf.Set("test.path", true)
-      conf.Save()
-
-      value := conf.Get("test.path")
-
-      Ω(value).To(Equal(true))
+        Ω(value).To(Equal(true))
+      })
     })
 	})
 })
