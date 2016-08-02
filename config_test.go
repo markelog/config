@@ -2,6 +2,8 @@ package config_test
 
 import (
 	"os"
+  // "fmt"
+  // "reflect"
 
 	"github.com/markelog/config"
 	. "github.com/onsi/ginkgo"
@@ -95,6 +97,33 @@ var _ = Describe("Config", func() {
       } else {
         Ω(`{"test":{"path":1}}`).To(Equal(result))
       }
+    })
+
+    It("should get int value", func() {
+      conf.Set("test.path", 1)
+      conf.Save()
+
+      value := conf.Get("test.path")
+
+      Ω(value).To(Equal(1))
+    })
+
+    It("should get string value", func() {
+      conf.Set("test.path", "test")
+      conf.Save()
+
+      value := conf.Get("test.path")
+
+      Ω(value).To(Equal("test"))
+    })
+
+    It("should get boolean value", func() {
+      conf.Set("test.path", true)
+      conf.Save()
+
+      value := conf.Get("test.path")
+
+      Ω(value).To(Equal(true))
     })
 	})
 })

@@ -30,6 +30,10 @@ func (config *Config) Set(key string, value interface{}) (*gabs.Container, error
   return config.content.SetP(value, key)
 }
 
+func (config *Config) Get(key string) interface{} {
+  return config.content.Path(key).Data()
+}
+
 func (config *Config) Save() error {
   content := []byte(config.content.String())
 
